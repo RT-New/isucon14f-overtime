@@ -916,7 +916,7 @@ func appGetNearbyChairs(w http.ResponseWriter, r *http.Request) {
 		err = tx.GetContext(
 			ctx,
 			chairLocation,
-			`SELECT * FROM chair_locations WHERE chair_id = ? ORDER BY created_at DESC LIMIT 1`,
+			`SELECT latitude, longitude FROM chairs WHERE id = ?`,
 			chair.ID,
 		)
 		if err != nil {
