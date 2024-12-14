@@ -73,8 +73,7 @@ type postChairActivityRequest struct {
 }
 
 func chairPostActivity(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	chair := ctx.Value("chair").(*Chair)
+	chair := r.Context().Value("chair").(*Chair)
 
 	req := &postChairActivityRequest{}
 	if err := bindJSON(r, req); err != nil {
@@ -82,7 +81,7 @@ func chairPostActivity(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err := db.ExecContext(ctx, "UPDATE chairs SET is_active = ? WHERE id = ?", req.IsActive, chair.ID)
+	_, err := db.Exec("UPDATE chairs SET is_active = ? WHERE id = ?", req.IsActive, chair.ID)
 	if err != nil {
 		writeError(w, http.StatusInternalServerError, err)
 		return
