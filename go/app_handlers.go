@@ -188,6 +188,13 @@ type getAppRidesResponseItemChair struct {
 	Model string `json:"model"`
 }
 
+type getAppRidesChair struct {
+	ID      string `db:"id"`
+	OwnerID string `db:"owner_id"`
+	Name    string `db:"name"`
+	Model   string `db:"model"`
+}
+
 func appGetRides(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	user := ctx.Value("user").(*User)
@@ -239,8 +246,8 @@ func appGetRides(w http.ResponseWriter, r *http.Request) {
 
 		item.Chair = getAppRidesResponseItemChair{}
 
-		chair := &Chair{}
-		if err := tx.GetContext(ctx, chair, `SELECT * FROM chairs WHERE id = ?`, ride.ChairID); err != nil {
+		chair := &getAppRidesChair{}
+		if err := tx.GetContext(ctx, chair, `SELECT id, owner_id, name, model FROM chairs WHERE id = ?`, ride.ChairID); err != nil {
 			writeError(w, http.StatusInternalServerError, err)
 			return
 		}
