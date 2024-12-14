@@ -3,12 +3,16 @@ SET CHARACTER_SET_CONNECTION = utf8mb4;
 
 USE isuride;
 
+SELECT "ALTER TABLE";
+
 -- chairs に locations を統合
 ALTER TABLE chairs 
   ADD COLUMN latitude INTEGER DEFAULT NULL,
   ADD COLUMN longitude INTEGER DEFAULT NULL,
   ADD COLUMN total_distance INTEGER NOT NULL DEFAULT 0,
   ADD COLUMN total_distance_updated_at DATETIME(6) DEFAULT NULL;
+
+SELECT "total_distance";
 
 UPDATE chairs SET
   total_distance = (
