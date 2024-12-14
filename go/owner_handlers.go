@@ -79,6 +79,12 @@ type ownerGetSalesResponse struct {
 	Models     []modelSales `json:"models"`
 }
 
+type ownerGetSalesChair struct {
+	ID    string `db:"id"`
+	Name  string `db:"name"`
+	Model string `db:"model"`
+}
+
 func ownerGetSales(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	since := time.Unix(0, 0)
@@ -109,8 +115,8 @@ func ownerGetSales(w http.ResponseWriter, r *http.Request) {
 	}
 	defer tx.Rollback()
 
-	chairs := []Chair{}
-	if err := tx.SelectContext(ctx, &chairs, "SELECT * FROM chairs WHERE owner_id = ?", owner.ID); err != nil {
+	chairs := []ownerGetSalesChair{}
+	if err := tx.SelectContext(ctx, &chairs, "SELECT id, name, model FROM chairs WHERE owner_id = ?", owner.ID); err != nil {
 		writeError(w, http.StatusInternalServerError, err)
 		return
 	}
