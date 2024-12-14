@@ -5,10 +5,10 @@ USE isuride;
 
 -- chairs に locations を統合
 ALTER TABLE chairs 
-  ADD latitude INTEGER DEFAULT NULL,
-  ADD longitude INTEGER DEFAULT NULL,
-  ADD total_distance INTEGER NOT NULL DEFAULT 0,
-  ADD total_distance_updated_at DATETIME(6) DEFAULT NULL;
+  ADD COLUMN latitude INTEGER DEFAULT NULL,
+  ADD COLUMN longitude INTEGER DEFAULT NULL,
+  ADD COLUMN total_distance INTEGER NOT NULL DEFAULT 0,
+  ADD COLUMN total_distance_updated_at DATETIME(6) DEFAULT NULL;
 
 UPDATE chairs SET
   total_distance = (
