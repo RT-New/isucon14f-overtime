@@ -14,24 +14,25 @@ ALTER TABLE chairs
 
 SELECT "total_distance";
 
-UPDATE chairs SET
-  total_distance = (
-    SELECT distance_table.total_distance
-    FROM (
-      SELECT
-        chair_id,
-        SUM(IFNULL(distance, 0)) AS total_distance,
-        MAX(created_at)          AS total_distance_updated_at
-      FROM (
-        SELECT 
-          chair_id,
-          created_at,
-          ABS(latitude - LAG(latitude) OVER (PARTITION BY chair_id ORDER BY created_at)) +
-          ABS(longitude - LAG(longitude) OVER (PARTITION BY chair_id ORDER BY created_at)) AS distance
-        FROM chair_locations) tmp
-        GROUP BY chair_id) distance_table
-    WHERE distance_table.chair_id = chairs.id
-  );
+CREATE OR REPLACE VIEW distances AS 
+  SELECT
+    chair_id,
+    SUM(IFNULL(distance, 0)) AS total_distance,
+    MAX(created_at)          AS total_distance_updated_at
+  FROM (
+    SELECT 
+      chair_id,
+      created_at,
+      ABS(latitude - LAG(latitude) OVER (PARTITION BY chair_id ORDER BY created_at)) +
+      ABS(longitude - LAG(longitude) OVER (PARTITION BY chair_id ORDER BY created_at)) AS distance
+    FROM chair_locations) tmp
+  GROUP BY chair_id;
+
+UPDATE chairs
+  JOIN distances ON distances.chair_id = chairs.id
+  SET
+    chairs.total_distance = distances.total_distance,
+    chairs.total_distance_updated_at = distances.total_distance_updated_at;
 
 UPDATE chairs SET
   latitude = (SELECT latitude FROM chair_locations WHERE chair_locations.chair_id = chairs.id ORDER BY created_at DESC LIMIT 1),
